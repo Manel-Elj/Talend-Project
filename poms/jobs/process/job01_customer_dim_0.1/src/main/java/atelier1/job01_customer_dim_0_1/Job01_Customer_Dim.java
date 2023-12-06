@@ -358,6 +358,18 @@ public class Job01_Customer_Dim implements TalendJob {
 			return this.Employee_ID;
 		}
 
+		public String Job_Title;
+
+		public String getJob_Title() {
+			return this.Job_Title;
+		}
+
+		public String Salary;
+
+		public String getSalary() {
+			return this.Salary;
+		}
+
 		@Override
 		public int hashCode() {
 			if (this.hashCodeDirty) {
@@ -396,6 +408,8 @@ public class Job01_Customer_Dim implements TalendJob {
 		public void copyDataTo(DataOutputStruct other) {
 
 			other.Employee_ID = this.Employee_ID;
+			other.Job_Title = this.Job_Title;
+			other.Salary = this.Salary;
 
 		}
 
@@ -475,6 +489,10 @@ public class Job01_Customer_Dim implements TalendJob {
 
 					this.Employee_ID = readString(dis);
 
+					this.Job_Title = readString(dis);
+
+					this.Salary = readString(dis);
+
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 
@@ -494,6 +512,10 @@ public class Job01_Customer_Dim implements TalendJob {
 
 					this.Employee_ID = readString(dis);
 
+					this.Job_Title = readString(dis);
+
+					this.Salary = readString(dis);
+
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 
@@ -510,6 +532,14 @@ public class Job01_Customer_Dim implements TalendJob {
 
 				writeString(this.Employee_ID, dos);
 
+				// String
+
+				writeString(this.Job_Title, dos);
+
+				// String
+
+				writeString(this.Salary, dos);
+
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -523,6 +553,14 @@ public class Job01_Customer_Dim implements TalendJob {
 
 				writeString(this.Employee_ID, dos);
 
+				// String
+
+				writeString(this.Job_Title, dos);
+
+				// String
+
+				writeString(this.Salary, dos);
+
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -535,6 +573,8 @@ public class Job01_Customer_Dim implements TalendJob {
 			sb.append(super.toString());
 			sb.append("[");
 			sb.append("Employee_ID=" + Employee_ID);
+			sb.append(",Job_Title=" + Job_Title);
+			sb.append(",Salary=" + Salary);
 			sb.append("]");
 
 			return sb.toString();
@@ -1188,6 +1228,13 @@ public class Job01_Customer_Dim implements TalendJob {
 
 				int tos_count_tDBOutput_2 = 0;
 
+				int updateKeyCount_tDBOutput_2 = 1;
+				if (updateKeyCount_tDBOutput_2 < 1) {
+					throw new RuntimeException("For update, Schema must have a key");
+				} else if (updateKeyCount_tDBOutput_2 == 3 && true) {
+					System.err.println("For update, every Schema column can not be a key");
+				}
+
 				int nb_line_tDBOutput_2 = 0;
 				int nb_line_update_tDBOutput_2 = 0;
 				int nb_line_inserted_tDBOutput_2 = 0;
@@ -1233,7 +1280,7 @@ public class Job01_Customer_Dim implements TalendJob {
 				String dbUser_tDBOutput_2 = "root";
 
 				final String decryptedPassword_tDBOutput_2 = routines.system.PasswordEncryptUtil
-						.decryptPassword("enc:routine.encryption.key.v1:MO8bm4mL/CHKg/M9eP5f1uN6vjMJ0eKP+FtpOA==");
+						.decryptPassword("enc:routine.encryption.key.v1:bSGzDLJSKTNMKUWdX59q43PT+3oktkNKp0OgTA==");
 
 				String dbPwd_tDBOutput_2 = decryptedPassword_tDBOutput_2;
 				java.lang.Class.forName(driverClass_tDBOutput_2);
@@ -1248,12 +1295,41 @@ public class Job01_Customer_Dim implements TalendJob {
 
 				int count_tDBOutput_2 = 0;
 
-				String insert_tDBOutput_2 = "INSERT INTO `" + "output" + "` (`Employee_ID`) VALUES (?)";
-				int batchSize_tDBOutput_2 = 100;
-				int batchSizeCounter_tDBOutput_2 = 0;
-
-				java.sql.PreparedStatement pstmt_tDBOutput_2 = conn_tDBOutput_2.prepareStatement(insert_tDBOutput_2);
+				java.sql.DatabaseMetaData dbMetaData_tDBOutput_2 = conn_tDBOutput_2.getMetaData();
+				java.sql.ResultSet rsTable_tDBOutput_2 = dbMetaData_tDBOutput_2.getTables("orion", null, null,
+						new String[] { "TABLE" });
+				boolean whetherExist_tDBOutput_2 = false;
+				while (rsTable_tDBOutput_2.next()) {
+					String table_tDBOutput_2 = rsTable_tDBOutput_2.getString("TABLE_NAME");
+					if (table_tDBOutput_2.equalsIgnoreCase("output")) {
+						whetherExist_tDBOutput_2 = true;
+						break;
+					}
+				}
+				if (whetherExist_tDBOutput_2) {
+					try (java.sql.Statement stmtDrop_tDBOutput_2 = conn_tDBOutput_2.createStatement()) {
+						stmtDrop_tDBOutput_2.execute("DROP TABLE `" + tableName_tDBOutput_2 + "`");
+					}
+				}
+				try (java.sql.Statement stmtCreate_tDBOutput_2 = conn_tDBOutput_2.createStatement()) {
+					stmtCreate_tDBOutput_2.execute("CREATE TABLE `" + tableName_tDBOutput_2
+							+ "`(`Job_Title` VARCHAR(23)  ,`Salary` VARCHAR(6)  ,`Employee_ID` INT(10)   not null ,primary key(`Employee_ID`))");
+				}
+				java.sql.PreparedStatement pstmt_tDBOutput_2 = conn_tDBOutput_2
+						.prepareStatement("SELECT COUNT(1) FROM `" + "output" + "` WHERE `Employee_ID` = ?");
 				resourceMap.put("pstmt_tDBOutput_2", pstmt_tDBOutput_2);
+				String insert_tDBOutput_2 = "INSERT INTO `" + "output"
+						+ "` (`Job_Title`,`Salary`,`Employee_ID`) VALUES (?,?,?)";
+
+				java.sql.PreparedStatement pstmtInsert_tDBOutput_2 = conn_tDBOutput_2
+						.prepareStatement(insert_tDBOutput_2);
+				resourceMap.put("pstmtInsert_tDBOutput_2", pstmtInsert_tDBOutput_2);
+				String update_tDBOutput_2 = "UPDATE `" + "output"
+						+ "` SET `Job_Title` = ?,`Salary` = ? WHERE `Employee_ID` = ?";
+
+				java.sql.PreparedStatement pstmtUpdate_tDBOutput_2 = conn_tDBOutput_2
+						.prepareStatement(update_tDBOutput_2);
+				resourceMap.put("pstmtUpdate_tDBOutput_2", pstmtUpdate_tDBOutput_2);
 
 				/**
 				 * [tDBOutput_2 begin ] stop
@@ -1323,7 +1399,7 @@ public class Job01_Customer_Dim implements TalendJob {
 				String dbUser_tDBInput_1 = "root";
 
 				final String decryptedPassword_tDBInput_1 = routines.system.PasswordEncryptUtil
-						.decryptPassword("enc:routine.encryption.key.v1:sAURc7EH/FloO4c0Kjlxiaje3/+U/zbugfa4aA==");
+						.decryptPassword("enc:routine.encryption.key.v1:EkpAKKwg23OKWqJV7ZLRRQG+ZR3x6IOZrnmBYg==");
 
 				String dbPwd_tDBInput_1 = decryptedPassword_tDBInput_1;
 
@@ -1493,6 +1569,8 @@ public class Job01_Customer_Dim implements TalendJob {
 
 // # Output table : 'DataOutput'
 								DataOutput_tmp.Employee_ID = organization_dim.Employee_ID = excel_file.Employee_ID;
+								DataOutput_tmp.Job_Title = excel_file.Job_Title;
+								DataOutput_tmp.Salary = excel_file.Salary;
 								DataOutput = DataOutput_tmp;
 // ###############################
 
@@ -1539,57 +1617,78 @@ public class Job01_Customer_Dim implements TalendJob {
 									pstmt_tDBOutput_2.setString(1, DataOutput.Employee_ID);
 								}
 
-								pstmt_tDBOutput_2.addBatch();
-								nb_line_tDBOutput_2++;
-
-								batchSizeCounter_tDBOutput_2++;
-								if (batchSize_tDBOutput_2 <= batchSizeCounter_tDBOutput_2) {
-									try {
-										int countSum_tDBOutput_2 = 0;
-										for (int countEach_tDBOutput_2 : pstmt_tDBOutput_2.executeBatch()) {
-											countSum_tDBOutput_2 += (countEach_tDBOutput_2 == java.sql.Statement.EXECUTE_FAILED
-													? 0
-													: 1);
-										}
-										rowsToCommitCount_tDBOutput_2 += countSum_tDBOutput_2;
-										insertedCount_tDBOutput_2 += countSum_tDBOutput_2;
-									} catch (java.sql.BatchUpdateException e) {
-										globalMap.put("tDBOutput_2_ERROR_MESSAGE", e.getMessage());
-										int countSum_tDBOutput_2 = 0;
-										for (int countEach_tDBOutput_2 : e.getUpdateCounts()) {
-											countSum_tDBOutput_2 += (countEach_tDBOutput_2 < 0 ? 0
-													: countEach_tDBOutput_2);
-										}
-										rowsToCommitCount_tDBOutput_2 += countSum_tDBOutput_2;
-										insertedCount_tDBOutput_2 += countSum_tDBOutput_2;
-										System.err.println(e.getMessage());
+								int checkCount_tDBOutput_2 = -1;
+								try (java.sql.ResultSet rs_tDBOutput_2 = pstmt_tDBOutput_2.executeQuery()) {
+									while (rs_tDBOutput_2.next()) {
+										checkCount_tDBOutput_2 = rs_tDBOutput_2.getInt(1);
+									}
+								}
+								if (checkCount_tDBOutput_2 > 0) {
+									if (DataOutput.Job_Title == null) {
+										pstmtUpdate_tDBOutput_2.setNull(1, java.sql.Types.VARCHAR);
+									} else {
+										pstmtUpdate_tDBOutput_2.setString(1, DataOutput.Job_Title);
 									}
 
-									batchSizeCounter_tDBOutput_2 = 0;
+									if (DataOutput.Salary == null) {
+										pstmtUpdate_tDBOutput_2.setNull(2, java.sql.Types.VARCHAR);
+									} else {
+										pstmtUpdate_tDBOutput_2.setString(2, DataOutput.Salary);
+									}
+
+									if (DataOutput.Employee_ID == null) {
+										pstmtUpdate_tDBOutput_2.setNull(3 + count_tDBOutput_2, java.sql.Types.VARCHAR);
+									} else {
+										pstmtUpdate_tDBOutput_2.setString(3 + count_tDBOutput_2,
+												DataOutput.Employee_ID);
+									}
+
+									try {
+										int processedCount_tDBOutput_2 = pstmtUpdate_tDBOutput_2.executeUpdate();
+										updatedCount_tDBOutput_2 += processedCount_tDBOutput_2;
+										rowsToCommitCount_tDBOutput_2 += processedCount_tDBOutput_2;
+										nb_line_tDBOutput_2++;
+									} catch (java.lang.Exception e) {
+										globalMap.put("tDBOutput_2_ERROR_MESSAGE", e.getMessage());
+										whetherReject_tDBOutput_2 = true;
+										nb_line_tDBOutput_2++;
+										System.err.print(e.getMessage());
+									}
+								} else {
+									if (DataOutput.Job_Title == null) {
+										pstmtInsert_tDBOutput_2.setNull(1, java.sql.Types.VARCHAR);
+									} else {
+										pstmtInsert_tDBOutput_2.setString(1, DataOutput.Job_Title);
+									}
+
+									if (DataOutput.Salary == null) {
+										pstmtInsert_tDBOutput_2.setNull(2, java.sql.Types.VARCHAR);
+									} else {
+										pstmtInsert_tDBOutput_2.setString(2, DataOutput.Salary);
+									}
+
+									if (DataOutput.Employee_ID == null) {
+										pstmtInsert_tDBOutput_2.setNull(3, java.sql.Types.VARCHAR);
+									} else {
+										pstmtInsert_tDBOutput_2.setString(3, DataOutput.Employee_ID);
+									}
+
+									try {
+										int processedCount_tDBOutput_2 = pstmtInsert_tDBOutput_2.executeUpdate();
+										insertedCount_tDBOutput_2 += processedCount_tDBOutput_2;
+										rowsToCommitCount_tDBOutput_2 += processedCount_tDBOutput_2;
+										nb_line_tDBOutput_2++;
+									} catch (java.lang.Exception e) {
+										globalMap.put("tDBOutput_2_ERROR_MESSAGE", e.getMessage());
+										whetherReject_tDBOutput_2 = true;
+										nb_line_tDBOutput_2++;
+										System.err.print(e.getMessage());
+									}
 								}
 								commitCounter_tDBOutput_2++;
 
 								if (commitEvery_tDBOutput_2 <= commitCounter_tDBOutput_2) {
 
-									try {
-										int countSum_tDBOutput_2 = 0;
-										for (int countEach_tDBOutput_2 : pstmt_tDBOutput_2.executeBatch()) {
-											countSum_tDBOutput_2 += (countEach_tDBOutput_2 < 0 ? 0 : 1);
-										}
-										rowsToCommitCount_tDBOutput_2 += countSum_tDBOutput_2;
-										insertedCount_tDBOutput_2 += countSum_tDBOutput_2;
-									} catch (java.sql.BatchUpdateException e) {
-										globalMap.put("tDBOutput_2_ERROR_MESSAGE", e.getMessage());
-										int countSum_tDBOutput_2 = 0;
-										for (int countEach_tDBOutput_2 : e.getUpdateCounts()) {
-											countSum_tDBOutput_2 += (countEach_tDBOutput_2 < 0 ? 0
-													: countEach_tDBOutput_2);
-										}
-										rowsToCommitCount_tDBOutput_2 += countSum_tDBOutput_2;
-										insertedCount_tDBOutput_2 += countSum_tDBOutput_2;
-										System.err.println(e.getMessage());
-
-									}
 									if (rowsToCommitCount_tDBOutput_2 != 0) {
 									}
 									conn_tDBOutput_2.commit();
@@ -1719,41 +1818,17 @@ public class Job01_Customer_Dim implements TalendJob {
 
 				currentComponent = "tDBOutput_2";
 
-				try {
-					if (batchSizeCounter_tDBOutput_2 != 0) {
-						int countSum_tDBOutput_2 = 0;
-
-						for (int countEach_tDBOutput_2 : pstmt_tDBOutput_2.executeBatch()) {
-							countSum_tDBOutput_2 += (countEach_tDBOutput_2 == java.sql.Statement.EXECUTE_FAILED ? 0
-									: 1);
-						}
-						rowsToCommitCount_tDBOutput_2 += countSum_tDBOutput_2;
-
-						insertedCount_tDBOutput_2 += countSum_tDBOutput_2;
-
-					}
-
-				} catch (java.sql.BatchUpdateException e) {
-					globalMap.put(currentComponent + "_ERROR_MESSAGE", e.getMessage());
-
-					int countSum_tDBOutput_2 = 0;
-					for (int countEach_tDBOutput_2 : e.getUpdateCounts()) {
-						countSum_tDBOutput_2 += (countEach_tDBOutput_2 < 0 ? 0 : countEach_tDBOutput_2);
-					}
-					rowsToCommitCount_tDBOutput_2 += countSum_tDBOutput_2;
-
-					insertedCount_tDBOutput_2 += countSum_tDBOutput_2;
-
-					System.err.println(e.getMessage());
-
+				if (pstmtUpdate_tDBOutput_2 != null) {
+					pstmtUpdate_tDBOutput_2.close();
+					resourceMap.remove("pstmtUpdate_tDBOutput_2");
 				}
-				batchSizeCounter_tDBOutput_2 = 0;
-
+				if (pstmtInsert_tDBOutput_2 != null) {
+					pstmtInsert_tDBOutput_2.close();
+					resourceMap.remove("pstmtInsert_tDBOutput_2");
+				}
 				if (pstmt_tDBOutput_2 != null) {
-
 					pstmt_tDBOutput_2.close();
 					resourceMap.remove("pstmt_tDBOutput_2");
-
 				}
 				resourceMap.put("statementClosed_tDBOutput_2", true);
 				if (commitCounter_tDBOutput_2 > 0 && rowsToCommitCount_tDBOutput_2 != 0) {
@@ -1839,6 +1914,16 @@ public class Job01_Customer_Dim implements TalendJob {
 
 				try {
 					if (resourceMap.get("statementClosed_tDBOutput_2") == null) {
+						java.sql.PreparedStatement pstmtUpdateToClose_tDBOutput_2 = null;
+						if ((pstmtUpdateToClose_tDBOutput_2 = (java.sql.PreparedStatement) resourceMap
+								.remove("pstmtUpdate_tDBOutput_2")) != null) {
+							pstmtUpdateToClose_tDBOutput_2.close();
+						}
+						java.sql.PreparedStatement pstmtInsertToClose_tDBOutput_2 = null;
+						if ((pstmtInsertToClose_tDBOutput_2 = (java.sql.PreparedStatement) resourceMap
+								.remove("pstmtInsert_tDBOutput_2")) != null) {
+							pstmtInsertToClose_tDBOutput_2.close();
+						}
 						java.sql.PreparedStatement pstmtToClose_tDBOutput_2 = null;
 						if ((pstmtToClose_tDBOutput_2 = (java.sql.PreparedStatement) resourceMap
 								.remove("pstmt_tDBOutput_2")) != null) {
@@ -3151,6 +3236,6 @@ public class Job01_Customer_Dim implements TalendJob {
 	ResumeUtil resumeUtil = null;
 }
 /************************************************************************************************
- * 98245 characters generated by Talend Open Studio for Data Integration on the
- * 6 décembre 2023 à 09:37:13 CET
+ * 101676 characters generated by Talend Open Studio for Data Integration on the
+ * 6 décembre 2023 à 10:35:33 CET
  ************************************************************************************************/

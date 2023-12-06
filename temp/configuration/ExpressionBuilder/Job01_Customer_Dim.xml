@@ -1,5 +1,5 @@
 <?xml version="1.1" encoding="UTF-8"?>
-<expression:EMFExpression xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:expression="http:///expression.ecore" id="tMap_1=>" expression="organization_dim.Employee_ID =excel_file.Employee_ID">
+<expression:EMFExpression xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:expression="http:///expression.ecore" id="tMap_1=>" expression="Mathematical.INT(TalendDate.formatDate(&quot;yyyy&quot;,TalendDate.getCurrentDate()))-Mathematical.INT(TalendDate.formatDate(&quot;yyyy&quot;,customer.Birth_Date))">
   <variables name="organization_dim.Employee_ID" value="null" talendType="id_String"/>
   <variables name="organization_dim.Employee_Country" value="null" talendType="id_String" nullable="true"/>
   <variables name="organization_dim.Company" value="null" talendType="id_String" nullable="true"/>
