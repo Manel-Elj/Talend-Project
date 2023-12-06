@@ -1,0 +1,20 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<expression:EMFExpression xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:expression="http:///expression.ecore" id="tMap_1=>" expression="organization_dim.Employee_ID =excel_file.Employee_ID">
+  <variables name="organization_dim.Employee_ID" value="null" talendType="id_String"/>
+  <variables name="organization_dim.Employee_Country" value="null" talendType="id_String" nullable="true"/>
+  <variables name="organization_dim.Company" value="null" talendType="id_String" nullable="true"/>
+  <variables name="organization_dim.Department" value="null" talendType="id_String" nullable="true"/>
+  <variables name="organization_dim.Section" value="null" talendType="id_String" nullable="true"/>
+  <variables name="excel_file.Employee_ID" value="null" talendType="id_String" nullable="true"/>
+  <variables name="excel_file.Start_Date" value="null" talendType="id_String" nullable="true"/>
+  <variables name="excel_file.End_Date" value="null" talendType="id_String" nullable="true"/>
+  <variables name="excel_file.Job_Title" value="null" talendType="id_String" nullable="true"/>
+  <variables name="excel_file.Salary" value="null" talendType="id_String" nullable="true"/>
+  <variables name="excel_file.Gender" value="null" talendType="id_String" nullable="true"/>
+  <variables name="excel_file.Birth_Date" value="null" talendType="id_String" nullable="true"/>
+  <variables name="excel_file.Emp_Hire_Date" value="null" talendType="id_String" nullable="true"/>
+  <variables name="excel_file.Emp_Term_Date" value="null" talendType="id_String" nullable="true"/>
+  <variables name="excel_file.Manager_ID" value="null" talendType="id_String" nullable="true"/>
+  <variables name="name15" value="value15"/>
+  <variables name="name16" value="value16"/>
+</expression:EMFExpression>
